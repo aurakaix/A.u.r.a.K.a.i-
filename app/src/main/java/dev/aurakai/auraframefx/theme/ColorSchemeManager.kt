@@ -5,6 +5,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import dev.aurakai.auraframefx.network.model.Theme as NetworkTheme
 import dev.aurakai.auraframefx.network.model.ThemeColors as NetworkThemeColors
+import java.util.Locale
 
 /**
  * Manages color schemes for the application, including dynamic theming and color manipulation.
@@ -94,6 +95,7 @@ class ColorSchemeManager {
      */
     fun colorToHex(color: Color): String {
         return String.format(
+            Locale.US,
             "#%02X%02X%02X",
             (color.red * 255).toInt(),
             (color.green * 255).toInt(),

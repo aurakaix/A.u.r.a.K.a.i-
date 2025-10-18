@@ -1,9 +1,7 @@
 ﻿package dev.aurakai.auraframefx.ui.components
 
-// import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +47,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -92,7 +91,10 @@ import kotlin.math.sin
  * Displays an interactive, animated halo UI for managing agents and delegating tasks.
  *
  * Renders a circular halo with agent nodes arranged around a central "GENESIS" node. Supports drag-and-drop task assignment to agents, with a task input overlay appearing during drag. Shows animated agent status indicators, a scrollable task history panel, and control buttons for rotation and history management. The halo rotates continuously unless paused, and agent statuses update in real time as tasks are processed.
+    // Collect StateFlow into Compose state to observe changes in composition
+    val taskHistoryState by taskHistory.collectAsState(initial = emptyList())
  */
+@JvmOverloads
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HaloView(viewModel: GenesisAgentViewModel = viewModel<GenesisAgentViewModel>()) {
@@ -105,7 +107,7 @@ fun HaloView(viewModel: GenesisAgentViewModel = viewModel<GenesisAgentViewModel>
     // Task delegation state
     var draggingAgent by remember { mutableStateOf<AgentType?>(null) }
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
-    var dragStartOffset by remember { mutableStateOf(Offset.Zero) }
+    var dragStartOffset: Any by remember { mutableStateOf(Offset.Zero) }
     var selectedTask by remember { mutableStateOf("") }
 
     // Task history
@@ -174,7 +176,7 @@ fun HaloView(viewModel: GenesisAgentViewModel = viewModel<GenesisAgentViewModel>
                 sweepAngle = 360f,
                 useCenter = false,
                 topLeft = Offset(center.x - radius, center.y - radius),
-                size = androidx.compose.ui.geometry.Size(
+                size = Size(
                     radius * 2,
                     radius * 2
                 ), // Use fully qualified name for clarity
@@ -465,7 +467,7 @@ fun HaloView(viewModel: GenesisAgentViewModel = viewModel<GenesisAgentViewModel>
                 .fillMaxHeight(0.5f) // Adjust height as needed
                 .width(200.dp) // Give it a fixed width or use fillMaxWidth with weight in a Row
                 .padding(16.dp)
-                .background(
+                items(taskHistoryState) { task ->
                     Color.Black.copy(alpha = 0.3f),
                     shape = MaterialTheme.shapes.medium
                 ) // Add a background for visibility
@@ -549,7 +551,7 @@ fun HaloView(viewModel: GenesisAgentViewModel = viewModel<GenesisAgentViewModel>
     // Animation effect
     LaunchedEffect(isRotating) {
         if (isRotating) {
-            while (true) {
+    LaunchedEffect(taskHistoryState) { // Trigger when taskHistory changes
                 rotationAngle = (rotationAngle + 1f) % 360f
                 delay(16) // 60 FPS
             }
@@ -560,7 +562,7 @@ fun HaloView(viewModel: GenesisAgentViewModel = viewModel<GenesisAgentViewModel>
     LaunchedEffect(Unit) {
         snapshotFlow { draggingAgent }
             .collect { agent ->
-                if (agent == null) {
+        taskHistoryState.forEach { task ->
                     dragOffset = Offset.Zero
                     dragStartOffset = Offset.Zero
                     selectedTask = ""

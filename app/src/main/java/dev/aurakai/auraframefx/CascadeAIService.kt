@@ -4,6 +4,7 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.aurakai.auraframefx.model.AgentInvokeRequest
 import dev.aurakai.auraframefx.model.AgentType
+import dev.aurakai.auraframefx.model.AiRequest
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -67,7 +68,7 @@ class CascadeAIService @Inject constructor(
      * @param request The AgentInvokeRequest containing the message, priority, and any invocation metadata to drive agent selection and processing.
      * @return A Flow of CascadeResponse objects representing initial state, per-agent progress updates, and the final synthesized response (or an error response on failure).
      */
-    suspend fun processRequest(request: AgentInvokeRequest): Flow<CascadeResponse> = flow {
+    suspend fun processRequest(request1: AiRequest, request: AgentInvokeRequest): Flow<CascadeResponse> = flow {
         try {
             Timber.tag(TAG).d("Processing cascade request: ${request.message}")
 

@@ -5,7 +5,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 
 /**
  * Utility functions for handling theme-related operations.
@@ -17,8 +17,8 @@ object ThemeUtils {
      */
     @Composable
     fun isDarkTheme(): Boolean {
-        val context = LocalContext.current
-        return when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+        val configuration = LocalConfiguration.current
+        return when (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_YES -> true
             Configuration.UI_MODE_NIGHT_NO -> false
             else -> isSystemInDarkTheme()

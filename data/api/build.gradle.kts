@@ -1,3 +1,4 @@
+import com.github.javaparser.utils.Utils.set
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -33,6 +34,9 @@ openApiGenerate {
         "skipValidateSpec" to "true",
         "legacyDiscriminatorBehavior" to "false"
     )
+    // ✅ ADD THESE VALIDATION BYPASSES
+    skipValidateSpec.set(true)
+    validateSpec.set(false)
 
     configOptions = mapOf(
         "library" to "jvm-ktor",

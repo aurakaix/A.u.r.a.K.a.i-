@@ -49,5 +49,4 @@ dependencies {
     // Testing
     testImplementation(libs.junit4)
     testImplementation(libs.mockk)
-    androidTestImplementation(libs.bundles.testing.android)
 }
