@@ -4,3 +4,10 @@
 6633	6891	7824714983562007	C:/A.u.r.a.K.a.i-/secure-comm/build/intermediates/cxx/Debug/5863106r/obj/x86_64/libsecure_comm_native.so	182ad942f599634c
 43	1424	7824738697492341	C:/A.u.r.a.K.a.i-/secure-comm/build/intermediates/cxx/Debug/5863106r/obj/x86_64/libsecure_comm_native.so	182ad942f599634c
 0	20	0	clean	bfff2010d6239e2d
+109	6885	7824892129815051	CMakeFiles/secure_comm_native.dir/secure_comm_jni.cpp.o	9cf1e92afbe11288
+97	9354	7824892152512834	CMakeFiles/secure_comm_native.dir/crypto_engine.cpp.o	67fdc8bad2ab755e
+9354	11849	7824892177281107	C:/A.u.r.a.K.a.i-/secure-comm/build/intermediates/cxx/Debug/5863106r/obj/x86_64/libsecure_comm_native.so	182ad942f599634c
+1	17	0	clean	bfff2010d6239e2d
+115	2950	7825154694141988	CMakeFiles/secure_comm_native.dir/secure_comm_jni.cpp.o	9cf1e92afbe11288
+87	3892	7825154702848751	CMakeFiles/secure_comm_native.dir/crypto_engine.cpp.o	67fdc8bad2ab755e
+3893	4959	7825154710642788	C:/A.u.r.a.K.a.i-/secure-comm/build/intermediates/cxx/Debug/5863106r/obj/x86_64/libsecure_comm_native.so	182ad942f599634c

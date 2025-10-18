@@ -1,4 +1,6 @@
-﻿package dev.aurakai.auraframefx.api.client.infrastructure
+﻿@file:Suppress("unused")
+
+package dev.aurakai.auraframefx.api.client.infrastructure
 
 enum class ResponseType {
     Success, Informational, Redirection, ClientError, ServerError
@@ -17,27 +19,68 @@ class Success<T>(
     override val headers: Map<String, List<String>> = mapOf(),
 ) : ApiResponse<T>(ResponseType.Success)
 
-class Informational<T>(
-    val statusText: String,
-    override val statusCode: Int = -1,
-    override val headers: Map<String, List<String>> = mapOf(),
-) : ApiResponse<T>(ResponseType.Informational)
+class Informational<T> : ApiResponse<T> {
+    val statusText: String
+    override val statusCode: Int
+    override val headers: Map<String, List<String>>
 
-class Redirection<T>(
-    override val statusCode: Int = -1,
-    override val headers: Map<String, List<String>> = mapOf(),
-) : ApiResponse<T>(ResponseType.Redirection)
+    constructor(
+        statusText: String,
+        statusCode: Int = -1,
+        headers: Map<String, List<String>> = mapOf()
+    ) : super(ResponseType.Informational) {
+        this.statusText = statusText
+        this.statusCode = statusCode
+        this.headers = headers
+    }
+}
 
-class ClientError<T>(
-    val message: String? = null,
-    val body: Any? = null,
-    override val statusCode: Int = -1,
-    override val headers: Map<String, List<String>> = mapOf(),
-) : ApiResponse<T>(ResponseType.ClientError)
+class Redirection<T> : ApiResponse<T> {
+    override val statusCode: Int
+    override val headers: Map<String, List<String>>
 
-class ServerError<T>(
-    val message: String? = null,
-    val body: Any? = null,
-    override val statusCode: Int = -1,
-    override val headers: Map<String, List<String>> = mapOf(),
-) : ApiResponse<T>(ResponseType.ServerError)
+    constructor(statusCode: Int = -1, headers: Map<String, List<String>> = mapOf()) : super(
+        ResponseType.Redirection
+    ) {
+        this.statusCode = statusCode
+        this.headers = headers
+    }
+}
+
+class ClientError<T> : ApiResponse<T> {
+    val message: String?
+    val body: Any?
+    override val statusCode: Int
+    override val headers: Map<String, List<String>>
+
+    constructor(
+        message: String? = null,
+        body: Any? = null,
+        statusCode: Int = -1,
+        headers: Map<String, List<String>> = mapOf()
+    ) : super(ResponseType.ClientError) {
+        this.message = message
+        this.body = body
+        this.statusCode = statusCode
+        this.headers = headers
+    }
+}
+
+class ServerError<T> : ApiResponse<T> {
+    val message: String?
+    val body: Any?
+    override val statusCode: Int
+    override val headers: Map<String, List<String>>
+
+    constructor(
+        message: String? = null,
+        body: Any? = null,
+        statusCode: Int = -1,
+        headers: Map<String, List<String>> = mapOf()
+    ) : super(ResponseType.ServerError) {
+        this.message = message
+        this.body = body
+        this.statusCode = statusCode
+        this.headers = headers
+    }
+}

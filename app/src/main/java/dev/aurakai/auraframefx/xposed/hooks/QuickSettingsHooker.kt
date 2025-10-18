@@ -274,6 +274,7 @@ class QuickSettingsHooker(
     /**
      * Updates Genesis tile state
      */
+    @Suppress("UNUSED_PARAMETER")
     private fun updateGenesisTileState(tileView: View) {
         try {
             // Update tile state with Genesis enhancements
@@ -369,10 +370,12 @@ class QuickSettingsHooker(
         // Add Genesis overlay elements
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun configurePanelLayout(qsPanel: ViewGroup) {
         // Configure panel layout
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun applyTileSpacing(qsPanel: ViewGroup) {
         // Apply tile spacing configuration
     }

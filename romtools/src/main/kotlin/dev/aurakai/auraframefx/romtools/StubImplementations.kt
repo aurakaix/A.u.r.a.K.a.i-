@@ -97,6 +97,7 @@ interface RomVerificationManager {
 
 @Singleton
 class RomVerificationManagerImpl @Inject constructor() : RomVerificationManager {
+    @Suppress("UNUSED_PARAMETER")
     override suspend fun verifyRomFile(romFile: RomFile): Result<Unit> =
         Result.failure(Exception("Not implemented"))
 

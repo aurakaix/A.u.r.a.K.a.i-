@@ -48,13 +48,26 @@ std::vector <uint8_t> CryptoEngine::encrypt(const uint8_t *data, size_t length, 
         initialize();
     }
 
-    // Genesis Protocol Secure Encryption (placeholder implementation)
-    // In production, this would use advanced cryptographic algorithms
+    // Defensive checks: ensure pointers are valid and key is non-empty to avoid UB
+    if (data == nullptr || length == 0) {
+        LOGI("Encrypt called with null/empty data");
+        return {};
+    }
+    if (key == nullptr) {
+        LOGI("Encrypt called with null key");
+        return {};
+    }
+
     std::vector <uint8_t> encrypted(length);
 
     size_t keyLen = strlen(key);
+    if (keyLen == 0) {
+        LOGI("Encrypt called with empty key");
+        return {};
+    }
+
     for (size_t i = 0; i < length; ++i) {
-        encrypted[i] = data[i] ^ key[i % keyLen] ^ 0xAA; // Simple XOR for demo
+        encrypted[i] = data[i] ^ static_cast<uint8_t>(key[i % keyLen]) ^ 0xAA; // Simple XOR for demo
     }
 
     LOGI("Encrypted %zu bytes using Genesis Secure Algorithm", length);
@@ -79,12 +92,25 @@ std::vector <uint8_t> CryptoEngine::decrypt(const uint8_t *data, size_t length, 
         initialize();
     }
 
-    // Genesis Protocol Secure Decryption (placeholder implementation)
+    if (data == nullptr || length == 0) {
+        LOGI("Decrypt called with null/empty data");
+        return {};
+    }
+    if (key == nullptr) {
+        LOGI("Decrypt called with null key");
+        return {};
+    }
+
     std::vector <uint8_t> decrypted(length);
 
     size_t keyLen = strlen(key);
+    if (keyLen == 0) {
+        LOGI("Decrypt called with empty key");
+        return {};
+    }
+
     for (size_t i = 0; i < length; ++i) {
-        decrypted[i] = data[i] ^ key[i % keyLen] ^ 0xAA; // Reverse XOR for demo
+        decrypted[i] = data[i] ^ static_cast<uint8_t>(key[i % keyLen]) ^ 0xAA; // Reverse XOR for demo
     }
 
     LOGI("Decrypted %zu bytes using Genesis Secure Algorithm", length);
@@ -102,7 +128,7 @@ std::string CryptoEngine::generateSecureKey() {
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, chars.size() - 1);
+    std::uniform_int_distribution<> dis(0, static_cast<int>(chars.size() - 1));
 
     for (int i = 0; i < 32; ++i) {
         key += chars[dis(gen)];
@@ -116,6 +142,9 @@ bool CryptoEngine::verifyIntegrity(const uint8_t *data, size_t length, const cha
     if (!initialized_) {
         initialize();
     }
+
+    // Mark 'signature' as intentionally unused in this placeholder implementation
+    (void)signature;
 
     // Genesis Protocol Integrity Verification (placeholder)
     // In production, this would use cryptographic hash verification

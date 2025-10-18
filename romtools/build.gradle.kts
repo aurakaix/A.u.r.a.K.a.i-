@@ -21,6 +21,12 @@ android {
         compose = true
     }
 
+    // Optionally set kotlin compiler extension version if needed; the version catalog
+    // maps the compose compiler plugin to the Kotlin version in this project.
+    // composeOptions {
+    //     kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+    // }
+
 
     java {
         toolchain {
@@ -136,4 +142,8 @@ dependencies {
             excludes += "META-INF/LICENSE.md"
         }
     }
+}
+dependencies {
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material.core)
 }

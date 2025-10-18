@@ -3,3 +3,7 @@
 4	11275	7824848056942074	CMakeFiles/secure_comm_native.dir/crypto_engine.cpp.o	2b7b7acd5499fd1e
 11281	12296	7824848066143924	C:/A.u.r.a.K.a.i-/secure-comm/build/intermediates/cxx/RelWithDebInfo/704d3i63/obj/x86_64/libsecure_comm_native.so	8c24d89c6e410b5f
 0	63	0	clean	bfff2010d6239e2d
+819	7478	7824892310898772	CMakeFiles/secure_comm_native.dir/secure_comm_jni.cpp.o	92215186950eefe0
+908	12517	7824892361793016	CMakeFiles/secure_comm_native.dir/crypto_engine.cpp.o	2b7b7acd5499fd1e
+12518	13897	7824892374771496	C:/A.u.r.a.K.a.i-/secure-comm/build/intermediates/cxx/RelWithDebInfo/704d3i63/obj/x86_64/libsecure_comm_native.so	8c24d89c6e410b5f
+0	14	0	clean	bfff2010d6239e2d

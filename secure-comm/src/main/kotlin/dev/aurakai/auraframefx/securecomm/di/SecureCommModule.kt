@@ -28,6 +28,7 @@ object SecureCommModule {
 
     @Provides
     @Singleton
+    @Suppress("UNUSED_PARAMETER")
     fun provideCryptoManager(
         @ApplicationContext context: Context,
         secureKeyStore: SecureKeyStore

@@ -66,6 +66,8 @@ uiAutomator = "2.3.0"
 mockk = "1.14.6"
 turbine = "1.2.1"
 benchmark = "1.4.1"
+foundation = "1.9.3"
+composeMaterialCore = "1.5.3"
 
 
 [libraries]
@@ -183,6 +185,8 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 mockk-agent = { module = "io.mockk:mockk-agent-jvm", version.ref = "mockk" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+androidx-compose-material-core = { group = "androidx.wear.compose", name = "compose-material-core", version.ref = "composeMaterialCore" }
 
 
 [plugins]
