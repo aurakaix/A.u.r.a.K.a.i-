@@ -5,8 +5,8 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import dev.aurakai.genesis.security.CryptographyManager
-import dev.aurakai.genesis.storage.SecureStorage
+import dev.aurakai.auraframefx.genesis.security.CryptographyManager
+import dev.aurakai.auraframefx.genesis.storage.SecureStorage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

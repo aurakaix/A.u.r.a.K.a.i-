@@ -1,6 +1,7 @@
 [versions]
 # ===== Core & Build =====
 agp = "9.0.0-alpha11"
+daggerCompiler = "2.57.2"
 kotlin = "2.3.0-Beta1"
 ksp = "2.2.21-RC-2.0.4"
 
@@ -72,6 +73,7 @@ composeMaterialCore = "1.5.3"
 
 [libraries]
 # ===== Hilt =====
+google-dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerCompiler" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
