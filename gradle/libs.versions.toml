@@ -3,8 +3,7 @@
 agp = "9.0.0-alpha11"
 kotlin = "2.3.0-Beta1"
 ksp = "2.2.21-RC-2.0.4"
-minSdk = "34"
-java = "24"
+
 desugar_jdk_libs = "2.1.5"
 
 # ===== Google, Firebase & AI =====

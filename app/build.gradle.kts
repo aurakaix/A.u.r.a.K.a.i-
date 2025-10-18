@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.api
+
 // ==== GENESIS PROTOCOL - MAIN APPLICATION ====
 // Convention plugin handles: Android, Kotlin, Hilt, Compose, Google Services
 plugins {
@@ -61,92 +63,93 @@ android {
     }
 
     ndkVersion = "29.0.14206865"
-}
 
-dependencies {
-    // ===== MODULE DEPENDENCIES =====
-    implementation(project(":core-module"))
-    implementation(project(":feature-module"))
-    implementation(project(":romtools"))
-    implementation(project(":secure-comm"))
-    implementation(project(":collab-canvas"))
-    implementation(project(":colorblendr"))
-    implementation(project(":sandbox-ui"))
-    implementation(project(":datavein-oracle-native"))
-    implementation(project(":extendsysa"))
-    implementation(project(":extendsysb"))
-    implementation(project(":extendsysc"))
-    implementation(project(":extendsysd"))
-    implementation(project(":extendsyse"))
-    implementation(project(":extendsysf"))
-    implementation(project(":benchmark"))
-    implementation(project(":data:api"))
-    // Ensure core library desugaring dependency is present (AGP requires it when desugaring is enabled)
-    // The convention plugin attempts to add this, but add explicitly here to avoid runtime error
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    // ===== ANDROIDX & COMPOSE =====
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.navigation.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.compose.material3)  // ✅ Use catalog, not hardcoded
-    // ===== LIFECYCLE =====
-    implementation(libs.bundles.lifecycle)
+    dependencies {
+        // ===== MODULE DEPENDENCIES =====
+        implementation(project(":core-module"))
+        implementation(project(":feature-module"))
+        implementation(project(":romtools"))
+        implementation(project(":secure-comm"))
+        implementation(project(":collab-canvas"))
+        implementation(project(":colorblendr"))
+        implementation(project(":sandbox-ui"))
+        implementation(project(":datavein-oracle-native"))
+        implementation(project(":extendsysa"))
+        implementation(project(":extendsysb"))
+        implementation(project(":extendsysc"))
+        implementation(project(":extendsysd"))
+        implementation(project(":extendsyse"))
+        implementation(project(":extendsysf"))
+        implementation(project(":benchmark"))
+        implementation(project(":data:api"))
+        // Ensure core library desugaring dependency is present (AGP requires it when desugaring is enabled)
+        // The convention plugin attempts to add this, but add explicitly here to avoid runtime error
+        coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    // ===== DATABASE - ROOM =====
-    implementation(libs.bundles.room)
-    // ===== DATASTORE =====
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.datastore.core)
+        // ===== ANDROIDX & COMPOSE =====
+        implementation(libs.androidx.activity.compose)
+        implementation(libs.androidx.navigation.compose)
+        implementation(platform(libs.androidx.compose.bom))
+        implementation(libs.androidx.core.ktx)
+        implementation(libs.androidx.compose.material3)  // ✅ Use catalog, not hardcoded
+        // ===== LIFECYCLE =====
+        implementation(libs.bundles.lifecycle)
 
-    // ===== KOTLIN & COROUTINES =====
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.kotlinx.datetime)
-    implementation(libs.bundles.coroutines)
+        // ===== DATABASE - ROOM =====
+        implementation(libs.bundles.room)
+        // ===== DATASTORE =====
+        implementation(libs.androidx.datastore.preferences)
+        implementation(libs.androidx.datastore.core)
 
-    // ===== NETWORKING =====
-    implementation(libs.bundles.network)
-    implementation(libs.moshi)
-    implementation(libs.moshi.kotlin)
+        // ===== KOTLIN & COROUTINES =====
+        implementation(libs.kotlinx.serialization.json)
+        implementation(libs.kotlinx.datetime)
+        implementation(libs.bundles.coroutines)
 
-    // ===== KTOR FOR OPENAPI CLIENT ===== ✅ Use catalog versions
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.auth)
+        // ===== NETWORKING =====
+        implementation(libs.bundles.network)
+        implementation(libs.moshi)
+        implementation(libs.moshi.kotlin)
 
-    // ===== FIREBASE =====
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.bundles.firebase)
+        // ===== KTOR FOR OPENAPI CLIENT ===== ✅ Use catalog versions
+        implementation(libs.ktor.client.core)
+        implementation(libs.ktor.client.content.negotiation)
+        implementation(libs.ktor.serialization.kotlinx.json)
+        implementation(libs.ktor.client.okhttp)
+        implementation(libs.ktor.client.auth)
 
-    ksp(libs.hilt.compiler)
-    // Dagger-compiler was previously added via hardcoded coordinates; remove the explicit dagger compiler
-    // implementation("com.google.dagger:dagger-compiler:2.57.2")
-    // ksp("com.google.dagger:dagger-compiler:2.57.2")
+        // ===== FIREBASE =====
+        implementation(platform(libs.firebase.bom))
+        implementation(libs.bundles.firebase)
 
-    // ===== WORKMANAGER =====
+        ksp(libs.hilt.compiler)
+        // Dagger-compiler was previously added via hardcoded coordinates; remove the explicit dagger compiler
+        implementation("com.google.dagger:dagger-compiler:2.57.2")
+        ksp("com.google.dagger:dagger-compiler:2.57.2")
 
-    // ===== ROOT/SUPERUSER ACCESS =====
-    // single canonical place to add libsu bundle
-    implementation(libs.bundles.su)
+        // ===== WORKMANAGER =====
 
-    // ===== XPOSED/LSPosed Integration =====
-    compileOnly(files("../Libs/api-82.jar"))
-    compileOnly(files("../Libs/api-82-sources.jar"))
+        // ===== ROOT/SUPERUSER ACCESS =====
+        // single canonical place to add libsu bundle
+        implementation(libs.bundles.su)
 
-    // ===== LIBSU (ROOT ACCESS) ===== ✅ Use catalog
+        // ===== XPOSED/LSPosed Integration =====
+        compileOnly(files("../Libs/api-82.jar"))
+        compileOnly(files("../Libs/api-82-sources.jar"))
 
-    // ===== MATERIAL DESIGN ===== ✅ Use catalog (already included above)
-    implementation(libs.androidx.material)  // Instead of hardcoded material:1.13.0
+        // ===== LIBSU (ROOT ACCESS) ===== ✅ Use catalog
 
-    // --- TESTING ---
-    testImplementation(libs.bundles.testing.unit)
-    androidTestImplementation(libs.bundles.testing.android)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.hilt.android.testing)
+        // ===== MATERIAL DESIGN ===== ✅ Use catalog (already included above)
+        implementation(libs.androidx.material)  // Instead of hardcoded material:1.13.0
 
-    // --- DEBUGGING ---
-    debugImplementation(libs.leakcanary.android)
+        // --- TESTING ---
+        testImplementation(libs.bundles.testing.unit)
+        androidTestImplementation(libs.bundles.testing.android)
+        androidTestImplementation(platform(libs.androidx.compose.bom))
+        androidTestImplementation(libs.hilt.android.testing)
+
+        // --- DEBUGGING ---
+        debugImplementation(libs.leakcanary.android)
+    }
 }
