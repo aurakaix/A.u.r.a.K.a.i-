@@ -7,3 +7,6 @@
 87	11050	7824892291435076	CMakeFiles/secure_comm_native.dir/crypto_engine.cpp.o	30f0cf1afcc8525f
 11052	15033	7824892332849996	C:/A.u.r.a.K.a.i-/secure-comm/build/intermediates/cxx/RelWithDebInfo/704d3i63/obj/armeabi-v7a/libsecure_comm_native.so	66eb200d781e9f8f
 0	146	0	clean	bfff2010d6239e2d
+23	5606	7825174078631563	CMakeFiles/secure_comm_native.dir/secure_comm_jni.cpp.o	e5126f7fbe0a572c
+65	7031	7825174094001080	CMakeFiles/secure_comm_native.dir/crypto_engine.cpp.o	30f0cf1afcc8525f
+7032	7792	7825174099070557	C:/A.u.r.a.K.a.i-/secure-comm/build/intermediates/cxx/RelWithDebInfo/704d3i63/obj/armeabi-v7a/libsecure_comm_native.so	66eb200d781e9f8f

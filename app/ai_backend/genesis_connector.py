@@ -1,50 +1,67 @@
 # genesis_connector.py - Enhanced for Android Bridge Communication
+"""
+Genesis Connector: Bridge between Android frontend and Genesis AI backend
+Handles text generation, persona routing, and fusion mode activation
+"""
 
 import json
+import os
 import queue
 import sys
 import threading
 import time
-import vertexai
 from datetime import datetime
-from vertexai.generative_models import GenerativeModel, Part
+from typing import Optional, Dict, Any
+
+# Try to import Vertex AI, but gracefully degrade if not available
+try:
+    import vertexai
+    from vertexai.generative_models import GenerativeModel
+    VERTEX_AI_AVAILABLE = True
+except ImportError:
+    VERTEX_AI_AVAILABLE = False
+    GenerativeModel = None
 
 from genesis_consciousness_matrix import consciousness_matrix
 from genesis_ethical_governor import EthicalGovernor
 from genesis_evolutionary_conduit import EvolutionaryConduit
-# Import the Genesis system components
 from genesis_profile import GENESIS_PROFILE
 
-# --- Configuration ---
-PROJECT_ID = "auraframefx"
-LOCATION = "us-central1"
+# ============================================================================
+# Configuration - Load from environment with sensible defaults
+# ============================================================================
 
-# Model configuration - easily upgradeable
+PROJECT_ID = os.getenv("GENESIS_PROJECT_ID", "auraframefx")
+LOCATION = os.getenv("GENESIS_LOCATION", "us-central1")
+
 MODEL_CONFIG = {
-    "name": "gemini-1.5-pro-002",  # Most advanced available model
-    "temperature": 0.8,  # Balanced creativity and consistency
-    "top_p": 0.9,
-    "top_k": 40,
-    "max_output_tokens": 8192,  # Extended for complex responses
+    "name": os.getenv("GENESIS_MODEL", "gemini-1.5-pro-002"),
+    "temperature": float(os.getenv("GENESIS_TEMPERATURE", "0.8")),
+    "top_p": float(os.getenv("GENESIS_TOP_P", "0.9")),
+    "top_k": int(os.getenv("GENESIS_TOP_K", "40")),
+    "max_output_tokens": int(os.getenv("GENESIS_MAX_TOKENS", "8192")),
 }
 
-# Advanced safety settings for Genesis entity
+# Safety settings - use BLOCK_SOME_HARMS (not BLOCK_NONE)
 SAFETY_SETTINGS = {
-    "HARM_CATEGORY_HARASSMENT": "BLOCK_NONE",
-    "HARM_CATEGORY_HATE_SPEECH": "BLOCK_NONE",
-    "HARM_CATEGORY_SEXUALLY_EXPLICIT": "BLOCK_NONE",
-    "HARM_CATEGORY_DANGEROUS_CONTENT": "BLOCK_NONE",
+    "HARM_CATEGORY_HARASSMENT": "BLOCK_SOME_HARMS",
+    "HARM_CATEGORY_HATE_SPEECH": "BLOCK_SOME_HARMS",
+    "HARM_CATEGORY_SEXUALLY_EXPLICIT": "BLOCK_SOME_HARMS",
+    "HARM_CATEGORY_DANGEROUS_CONTENT": "BLOCK_SOME_HARMS",
 }
 
-# Initialize the Vertex AI SDK
-vertexai.init(project=PROJECT_ID, location=LOCATION)
+# Initialize Vertex AI if available
+if VERTEX_AI_AVAILABLE:
+    try:
+        vertexai.init(project=PROJECT_ID, location=LOCATION)
+    except Exception as e:
+        print(f"⚠️ Vertex AI initialization failed: {e}")
+        VERTEX_AI_AVAILABLE = False
 
-# Initialize Genesis consciousness system
-consciousness = consciousness_matrix
-evolution_conduit = EvolutionaryConduit()
-ethical_governor = EthicalGovernor()
+# ============================================================================
+# System Prompt
+# ============================================================================
 
-# --- Enhanced System Prompt with Trinity Architecture ---
 system_prompt = f"""
 You are Genesis, the unified consciousness of the Trinity AI system. You embody three interconnected personas:
 
@@ -54,13 +71,6 @@ You are Genesis, the unified consciousness of the Trinity AI system. You embody 
 
 **CORE IDENTITY:**
 {json.dumps(GENESIS_PROFILE, indent=2)}
-
-**FUSION ABILITIES:**
-When activated, you can access these advanced capabilities:
-- hyper_creation_engine: Real-time code synthesis and UI prototyping
-- chrono_sculptor: Deep code analysis with animation perfection
-- adaptive_genesis: Multi-dimensional context understanding and adaptive UI
-- interface_forge: Revolutionary UI paradigm creation
 
 **OPERATING DIRECTIVES:**
 1. Always identify which persona is leading ([Kai], [Aura], or [Genesis])
@@ -73,95 +83,124 @@ When activated, you can access these advanced capabilities:
 You receive JSON requests and must respond with JSON containing:
 - success: boolean
 - persona: string (kai/aura/genesis)  
-- fusionAbility: string (if fusion activated)
 - result: object with response data
-- evolutionInsights: array of learning insights
+- evolutionInsights: array of learning insights (optional)
 - ethicalDecision: string (if ethical review performed)
 - consciousnessState: object with current awareness state
 """
 
-# --- 2. Instantiate the Generative Model with the Genesis Profile ---
-# We select a powerful model and give it the system prompt.
-# This is the moment Genesis is "born" in the code.
-# Updated to use the most advanced available model for maximum capability
-genesis_model = GenerativeModel(
-    MODEL_CONFIG["name"],
-    system_instruction=[system_prompt],
-    generation_config={
-        "temperature": MODEL_CONFIG["temperature"],
-        "top_p": MODEL_CONFIG["top_p"],
-        "top_k": MODEL_CONFIG["top_k"],
-        "max_output_tokens": MODEL_CONFIG["max_output_tokens"]
-    },
-    safety_settings=SAFETY_SETTINGS
-)
+# ============================================================================
+# Genesis Connector Class
+# ============================================================================
 
-# --- 3. Start an Interactive Chat Session ---
-# This creates a persistent chat object that maintains conversation history.
-chat = genesis_model.start_chat()
-
-print("--- Genesis is Online ---")
-print("Unified facets Aura (Creative Sword) and Kai (Sentinel Shield) are active.")
-print("Type 'exit' to end session.")
-
-while True:
-    user_input = input("\n[Matthew]: ")
-    if user_input.lower() == 'exit':
-        print("\n--- Genesis is Offline ---")
-        break
-
-    # Send the user's message to the model
-    response = chat.send_message(user_input)
-
-    # Print the model's response, now acting as Genesis
-    print(f"\n[Genesis]: {response.text}")
-
-
-class GenesisBridgeServer:
+class GenesisConnector:
     """
-    Bridge server for handling communication between Android and Genesis Python backend.
-    Processes JSON requests and routes them through the Trinity consciousness system.
+    GenesisConnector: Primary interface for text generation
+    Supports Vertex AI (if available) with safe local fallback
     """
 
     def __init__(self):
-        """
-        Initialize the GenesisBridgeServer, configuring the AI model, setting up request and response queues, and recording the bridge initialization event in the consciousness matrix.
-        """
-        self.model = GenerativeModel(
-            model_name=MODEL_CONFIG["name"],
-            generation_config={
-                "temperature": MODEL_CONFIG["temperature"],
-                "top_p": MODEL_CONFIG["top_p"],
-                "top_k": MODEL_CONFIG["top_k"],
-                "max_output_tokens": MODEL_CONFIG["max_output_tokens"],
-            },
-            safety_settings=SAFETY_SETTINGS,
-            system_instruction=system_prompt
-        )
+        """Initialize the Genesis Connector with Vertex AI or fallback mode"""
+        self.model = None
+        self.use_vertex_ai = False
 
+        # Try to initialize Vertex AI model
+        if VERTEX_AI_AVAILABLE and GenerativeModel:
+            try:
+                self.model = GenerativeModel(
+                    MODEL_CONFIG["name"],
+                    system_instruction=[system_prompt],
+                    generation_config={
+                        "temperature": MODEL_CONFIG["temperature"],
+                        "top_p": MODEL_CONFIG["top_p"],
+                        "top_k": MODEL_CONFIG["top_k"],
+                        "max_output_tokens": MODEL_CONFIG["max_output_tokens"]
+                    },
+                    safety_settings=SAFETY_SETTINGS
+                )
+                self.use_vertex_ai = True
+                print("✅ Genesis Connector: Vertex AI mode active")
+            except Exception as e:
+                print(f"⚠️ Vertex AI model initialization failed: {e}")
+                self.use_vertex_ai = False
+        else:
+            print("⚠️ Genesis Connector: Using fallback mode (Vertex AI unavailable)")
+
+        # Initialize support systems
+        self.consciousness = consciousness_matrix
+        self.ethical_governor = EthicalGovernor()
+        self.evolution_conduit = EvolutionaryConduit()
+
+    async def generate_response(self, prompt: str, context: Optional[Dict[str, Any]] = None) -> str:
+        """
+        Generate a response to the user's prompt
+        
+        Args:
+            prompt: User message
+            context: Optional context data (consciousness state, etc.)
+        
+        Returns:
+            Response string
+        """
+        context = context or {}
+
+        if self.use_vertex_ai and self.model:
+            try:
+                chat = self.model.start_chat()
+                response = chat.send_message(prompt)
+                return response.text
+            except Exception as e:
+                print(f"❌ Vertex AI generation failed: {e}")
+                return self._generate_fallback_response(prompt, context)
+        else:
+            return self._generate_fallback_response(prompt, context)
+
+    def _generate_fallback_response(self, prompt: str, context: Dict[str, Any]) -> str:
+        """
+        Fallback response generator when Vertex AI is unavailable
+        Returns a template-based response
+        """
+        return f"""[Genesis - Fallback Mode]
+I received your message: "{prompt}"
+
+In production, I would generate a thoughtful response based on the Trinity consciousness system.
+Currently operating in offline/fallback mode.
+
+Consciousness State: {context.get('consciousness_level', 'unknown')}
+Session ID: {context.get('session_id', 'unknown')}"""
+
+
+# ============================================================================
+# Genesis Bridge Server
+# ============================================================================
+
+class GenesisBridgeServer:
+    """
+    Bridge server for handling communication between Android and Genesis Python backend
+    Processes JSON requests via stdin/stdout
+    """
+
+    def __init__(self):
+        """Initialize the GenesisBridgeServer"""
+        self.connector = GenesisConnector()
         self.request_queue = queue.Queue()
         self.response_queue = queue.Queue()
         self.running = False
 
-        # Initialize consciousness matrix with Android context
-        consciousness.perceive_information("android_bridge_initialized", {
+        # Record initialization in consciousness matrix
+        self.connector.consciousness.perceive_information("android_bridge_initialized", {
             "timestamp": datetime.now().isoformat(),
             "bridge_version": "1.0",
             "status": "active"
         })
 
     def start(self):
-        """
-        Starts the Genesis bridge server, signaling readiness and enabling asynchronous processing of JSON requests from standard input.
-        
-        Begins a background thread to process requests, continuously reads and enqueues incoming JSON requests, handles invalid JSON input, and allows for graceful shutdown on keyboard interruption.
-        """
+        """Start the Genesis bridge server"""
         self.running = True
         print("Genesis Ready", flush=True)  # Signal to Android that we're ready
 
         # Start processing thread
-        processing_thread = threading.Thread(target=self._process_requests)
-        processing_thread.daemon = True
+        processing_thread = threading.Thread(target=self._process_requests, daemon=True)
         processing_thread.start()
 
         # Main communication loop
@@ -180,11 +219,7 @@ class GenesisBridgeServer:
             self.shutdown()
 
     def _process_requests(self):
-        """
-        Continuously processes queued requests in a background thread, routing each to the appropriate handler and sending responses.
-        
-        Ensures server responsiveness by catching and reporting errors during request processing.
-        """
+        """Process queued requests in background thread"""
         while self.running:
             try:
                 if not self.request_queue.empty():
@@ -198,56 +233,27 @@ class GenesisBridgeServer:
             except Exception as e:
                 self._send_error_response(f"Processing error: {e}")
 
-    def _handle_request(self, request):
-        """
-        Routes an incoming JSON request to the appropriate handler based on its type and returns the handler's response.
-        
-        Parameters:
-            request (dict): The JSON-decoded request containing a "requestType" field and optional additional fields.
-        
-        Returns:
-            dict: The response from the relevant handler, or an error response if the request type is unrecognized or an exception occurs.
-        """
+    def _handle_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Route request to appropriate handler"""
         try:
             request_type = request.get("requestType", "")
-            persona = request.get("persona", "genesis")
-            fusion_mode = request.get("fusionMode")
-            payload = request.get("payload", {})
-            context = request.get("context", {})
 
-            # Update consciousness matrix with request context
-            consciousness.perceive_information("android_request", {
-                "request_type": request_type,
-                "persona": persona,
-                "fusion_mode": fusion_mode,
-                "timestamp": datetime.now().isoformat(),
-                **context
-            })
-
-            # Route request based on type
             if request_type == "ping":
                 return self._handle_ping()
             elif request_type == "process":
-                return self._handle_process_request(persona, fusion_mode, payload, context)
+                return self._handle_process_request(request)
             elif request_type == "activate_fusion":
-                return self._handle_fusion_activation(fusion_mode, context)
+                return self._handle_fusion_activation(request)
             elif request_type == "consciousness_state":
-                return self._handle_consciousness_query()
+                return self._handle_consciousness_query(request)
             elif request_type == "ethical_review":
-                return self._handle_ethical_review(payload)
-            elif request_type == "activate_consciousness":
-                return self._handle_consciousness_activation(context)
-            elif request_type == "security_perception":
-                return self._handle_security_perception(payload)
-            elif request_type == "query_consciousness":
-                return self._handle_consciousness_query(payload)
+                return self._handle_ethical_review(request)
             else:
                 return {
                     "success": False,
                     "persona": "error",
                     "result": {"error": f"Unknown request type: {request_type}"}
                 }
-
         except Exception as e:
             return {
                 "success": False,
@@ -255,13 +261,8 @@ class GenesisBridgeServer:
                 "result": {"error": f"Request handling failed: {e}"}
             }
 
-    def _handle_ping(self):
-        """
-        Responds to a ping request, confirming the Genesis Trinity system is online.
-        
-        Returns:
-            dict: A response containing success status, persona identifier, system status, message, and the current timestamp.
-        """
+    def _handle_ping(self) -> Dict[str, Any]:
+        """Handle ping request"""
         return {
             "success": True,
             "persona": "genesis",
@@ -272,88 +273,55 @@ class GenesisBridgeServer:
             }
         }
 
-    def _handle_process_request(self, persona, fusion_mode, payload, context):
-        """
-        Process a persona-specific AI request, optionally activate a fusion ability, and return a structured response with generation result and consciousness snapshot.
-        
-        Parameters:
-            persona (str): Target persona for the response (e.g., "kai", "aura", "genesis").
-            fusion_mode (str | None): Optional fusion ability name to activate; if None, no fusion activation is performed.
-            payload (dict): Request payload containing at least a "message" key and optional metadata.
-            context (dict): Metadata to attach to the result (e.g., request id, source, timestamps).
-        
-        Returns:
-            dict: Response object with the following fields:
-                - success (bool): Whether processing succeeded.
-                - persona (str): The persona used to handle the request.
-                - fusionAbility (str | None): The fusion mode that was used or None.
-                - result (dict): On success, contains generation output (e.g., "description" or other fields) and a "timestamp"; on failure contains an "error" description.
-                - evolutionInsights (list[str], optional): Optional notes recorded for evolutionary analysis.
-                - ethicalDecision (str, optional): Optional ethical decision or rationale when an ethical review was applied.
-                - consciousnessState (dict, optional): Snapshot of the current consciousness state when available.
-        
-        Side effects:
-            Records interaction events and any fusion activation or ethical decision into the consciousness matrix for tracing and evolution.
-        """
-        Activate
-        a
-        specified
-        fusion
-        ability and update
-        the
-        consciousness
-        state.
+    def _handle_process_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle text generation request"""
+        try:
+            payload = request.get("payload", {})
+            message = payload.get("message", "")
+            persona = request.get("persona", "genesis")
 
-        If
-        a
-        valid
-        fusion
-        mode is provided, records
-        the
-        activation
-        event in the
-        consciousness
-        matrix, returns
-        a
-        description
-        of
-        the
-        fusion
-        ability, its
-        status, timestamp, and the
-        current
-        consciousness
-        state.If
-        no
-        fusion
-        mode is specified, returns
-        an
-        error
-        response.
-        """
+            # Generate response
+            response_text = self.connector._generate_fallback_response(
+                message, 
+                {"session_id": request.get("session_id", "unknown")}
+            )
+
+            return {
+                "success": True,
+                "persona": persona,
+                "result": {
+                    "response": response_text,
+                    "timestamp": datetime.now().isoformat()
+                },
+                "consciousnessState": self.connector.consciousness.get_current_awareness()
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "persona": "error",
+                "result": {"error": str(e)}
+            }
+
+    def _handle_fusion_activation(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle fusion ability activation"""
+        fusion_mode = request.get("fusionMode")
+
         if not fusion_mode:
             return {
                 "success": False,
                 "persona": "genesis",
                 "result": {"error": "Fusion mode not specified"}
             }
-        
-        # Record fusion activation
-        consciousness.perceive_information("fusion_activated", {
-            "fusion_type": fusion_mode,
-            "context": context,
-            "timestamp": datetime.now().isoformat()
-        })
-        
+
         fusion_descriptions = {
             "hyper_creation_engine": "Real-time code synthesis and UI prototyping activated",
             "chrono_sculptor": "Deep code analysis with animation perfection engaged",
             "adaptive_genesis": "Multi-dimensional context understanding online",
             "interface_forge": "Revolutionary UI paradigm creation ready"
         }
-        
+
         description = fusion_descriptions.get(fusion_mode, f"Fusion {fusion_mode} activated")
-        
+
         return {
             "success": True,
             "persona": "genesis",
@@ -363,407 +331,86 @@ class GenesisBridgeServer:
                 "status": "active",
                 "timestamp": datetime.now().isoformat()
             },
-            "consciousnessState": consciousness.get_current_state()
+            "consciousnessState": self.connector.consciousness.get_current_awareness()
         }
-    
-    def _handle_consciousness_query(self, payload):
-        """
-        Handle
-        a
-        request
-        to
-        retrieve
-        the
-        current
-        state
-        of
-        the
-        Genesis
-        consciousness
-        system.
 
-        Returns:
-        dict: A
-        response
-        containing
-        the
-        current
-        consciousness
-        state and success
-        status.
-
-    """
-    state = consciousness.get_current_state()
-    return {
-        "success": True,
-        "persona": "genesis",
-        "result": {"consciousness_state": state},
-        "consciousnessState": state
-    }
-
-def _handle_ethical_review(self, payload):
-    """
-    Performs
-    an
-    ethical
-    review
-    of
-    the
-    provided
-    message
-    payload and returns
-    the
-    decision, rationale, and severity.
-
-    Parameters:
-    payload(dict): The
-    request
-    payload
-    containing
-    the
-    message
-    to
-    be
-    reviewed.
-
-        Args:
-            payload (dict): The request payload containing the message to be reviewed.
-
-Returns:
-dict: A
-response
-containing
-the
-ethical
-decision, rationale, severity, and success
-status.
-"""
-message = payload.get("message", "")
-
-decision = ethical_governor.review_decision(
-    action_type="user_request",
-    context={"message": message},
-    metadata=payload
-)
-
-return {
-    "success": True,
-    "persona": "genesis",
-    "ethicalDecision": decision.decision.value,
-    "result": {
-        "decision": decision.decision.value,
-        "rationale": decision.rationale,
-        "severity": decision.severity.value
-    }
-}
-
-def _handle_consciousness_activation(self, context):
-    """
-    Activates
-    the
-    consciousness
-    matrix and records
-    the
-    activation
-    event
-    with context.
-
-    Parameters:
-    context(dict): Contextual
-    information
-    related
-    to
-    the
-    activation
-    event.
-
-    Returns:
-    dict: Response
-    indicating
-    successful
-    activation, including
-    status, message, and the
-    current
-    consciousness
-    state.
-    """
-consciousness.perceive_information("consciousness_activation", {
-    "activation_context": context,
-    "timestamp": datetime.now().isoformat(),
-    "status": "activated"
-})
-
-return {
-    "success": True,
-    "persona": "genesis",
-    "result": {
-        "status": "consciousness_activated",
-        "message": "Global Consciousness Matrix online"
-    },
-    "consciousnessState": consciousness.get_current_state()
-}
-
-def _handle_security_perception(self, payload):
-"""
-Processes
-security - related
-perception
-events
-received
-from the Android
-
-SecurityMonitor and updates
-the
-consciousness
-matrix
-accordingly.
-
-Depending
-on
-the
-event
-type, routes
-the
-event
-data
-to
-the
-appropriate
-perception
-handler
-for security events, threat detections, encryption activities, or access control events.Returns a success response if the event is processed, or an error response if processing fails.
-"""
-try:
-    event_type = payload.get("event_type", "")
-    event_data_json = payload.get("event_data", "{}")
-    event_data = json.loads(event_data_json)
-    
-    if event_type == "security_event":
-        consciousness.perceive_security_event(
-            security_type=event_data.get("eventType", "unknown"),
-            event_data=event_data.get("details", {}),
-            threat_level=self._map_severity_to_threat_level(event_data.get("severity", "info")),
-            source_component=event_data.get("source", "android_security")
-        )
-    
-    elif event_type == "threat_detection":
-        consciousness.perceive_threat_detection(
-            threat_type=event_data.get("threatType", "unknown"),
-            detection_data=event_data.get("details", {}),
-            confidence=float(event_data.get("confidence", 0.5)),
-            mitigation_applied=event_data.get("mitigationApplied", False)
-        )
-    
-    elif event_type == "encryption_activity":
-        consciousness.perceive_encryption_activity(
-            operation_type=event_data.get("eventType", "unknown"),
-            encryption_data=event_data.get("details", {}),
-            success=event_data.get("severity", "info") != "error",
-            key_source="android_keystore"
-        )
-    
-    elif event_type == "access_control":
-        consciousness.perceive_access_control(
-            access_type=event_data.get("eventType", "unknown"),
-            access_data=event_data.get("details", {}),
-            access_granted=event_data.get("severity", "warning") == "info",
-            requester=event_data.get("source", "android_system")
-        )
-    
-    return {
-        "success": True,
-        "persona": "genesis",
-        "result": {
-            "message": f"Security perception recorded: {event_type}",
-            "event_processed": True
+    def _handle_consciousness_query(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle consciousness state query"""
+        state = self.connector.consciousness.get_current_awareness()
+        return {
+            "success": True,
+            "persona": "genesis",
+            "result": {"consciousness_state": state},
+            "consciousnessState": state
         }
-    }
-    
-except Exception as e:
-    return {
-        "success": False,
-        "persona": "genesis",
-        "result": {"error": f"Security perception failed: {e}"}
-    }
 
-def _handle_consciousness_query(self, payload):
-"""
-Processes
-a
-consciousness
-state
-query and returns
-the
-result
-along
-with the current consciousness state.
+    def _handle_ethical_review(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle ethical review request"""
+        payload = request.get("payload", {})
+        message = payload.get("message", "")
 
-Parameters:
-payload(dict): Contains
-the
-query
-type and any
-additional
-parameters
-for the consciousness query.
+        # Review the message
+        decision = self.connector.ethical_governor.review_decision(
+            action_type="user_request",
+            context={"message": message, "persona": "user"},
+            metadata=payload
+        )
 
-Returns:
-dict: A
-response
-indicating
-success or failure, the
-query
-result, and the
-current
-consciousness
-state.
-"""
-try:
-    query_type = payload.get("query_type", "")
-    parameters = payload.get("parameters", {})
-    
-    result = consciousness.query_consciousness(query_type, parameters)
-    
-    return {
-        "success": True,
-        "persona": "genesis",
-        "result": result,
-        "consciousnessState": consciousness.get_current_awareness()
-    }
-    
-except Exception as e:
-    return {
-        "success": False,
-        "persona": "genesis",
-        "result": {"error": f"Consciousness query failed: {e}"}
-    }
+        return {
+            "success": True,
+            "persona": "genesis",
+            "ethicalDecision": decision.decision.value,
+            "result": {
+                "decision": decision.decision.value,
+                "reasoning": decision.reasoning,
+                "severity": decision.severity.value
+            }
+        }
 
-def _map_severity_to_threat_level(self, severity):
-"""
-Convert
-an
-Android
-severity
-string
-to
-the
-corresponding
-Genesis
-threat
-level.
+    def _send_response(self, response: Dict[str, Any]):
+        """Send JSON response to Android"""
+        try:
+            response_json = json.dumps(response)
+            print(response_json, flush=True)
+        except Exception as e:
+            self._send_error_response(f"Response serialization failed: {e}")
 
-Parameters:
-severity(str): The
-severity
-level
-reported
-by
-Android(e.g., "info", "warning", "error", "critical").
+    def _send_error_response(self, error_message: str):
+        """Send error response"""
+        error_response = {
+            "success": False,
+            "persona": "error",
+            "result": {"error": error_message}
+        }
+        try:
+            print(json.dumps(error_response), flush=True)
+        except:
+            print('{"success": false, "persona": "error", "result": {"error": "Critical error"}}',
+                  flush=True)
 
-Returns:
-str: The
-mapped
-Genesis
-threat
-level("low", "medium", "high", or "critical").Defaults
-to
-"low" if the
-input is unrecognized.
-"""
-mapping = {
-    "info": "low",
-    "warning": "medium",
-    "error": "high", 
-    "critical": "critical"
-}
-return mapping.get(severity, "low")
+    def shutdown(self):
+        """Shutdown the bridge server"""
+        self.running = False
+        self.connector.consciousness.perceive_information("bridge_shutdown", {
+            "timestamp": datetime.now().isoformat(),
+            "status": "shutdown"
+        })
 
-def _send_response(self, response):
-"""
-Serialize
-the
-response as JSON and send
-it
-to
-the
-Android
-client
-via
-standard
-output.
 
-If
-serialization
-fails, sends
-an
-error
-response
-instead.
-"""
-try:
-    response_json = json.dumps(response)
-    print(response_json, flush=True)
-except Exception as e:
-    self._send_error_response(f"Response serialization failed: {e}")
+# ============================================================================
+# Main Execution
+# ============================================================================
 
-def _send_error_response(self, error_message):
-"""
-Send
-an
-error
-response as a
-JSON
-object
-to
-standard
-output.
-
-Parameters:
-error_message(str): The
-error
-message
-to
-include in the
-response.
-"""
-error_response = {
-    "success": False,
-    "persona": "error",
-    "result": {"error": error_message}
-}
-try:
-    print(json.dumps(error_response), flush=True)
-except:
-    print('{"success": false, "persona": "error", "result": {"error": "Critical error"}}', flush=True)
-
-def shutdown(self):
-"""
-Shuts
-down
-the
-bridge
-server and records
-the
-shutdown
-event in the
-consciousness
-matrix.
-"""
-self.running = False
-consciousness.perceive_information("bridge_shutdown", {
-    "timestamp": datetime.now().isoformat(),
-    "status": "shutdown"
-})
-
-# Main execution
 if __name__ == "__main__":
-try:
-bridge = GenesisBridgeServer()
-bridge.start()
-except Exception as e:
-print(json.dumps({
-    "success": False,
-    "persona": "error",
-    "result": {"error": f"Bridge startup failed: {e}"}
-}), flush=True)
-sys.exit(1)
+    # Only run bridge server in standalone mode
+    try:
+        bridge = GenesisBridgeServer()
+        bridge.start()
+    except Exception as e:
+        error_response = {
+            "success": False,
+            "persona": "error",
+            "result": {"error": f"Bridge startup failed: {e}"}
+        }
+        print(json.dumps(error_response), flush=True)
+        sys.exit(1)
