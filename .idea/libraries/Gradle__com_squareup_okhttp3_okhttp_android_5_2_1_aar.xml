@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.squareup.okhttp3:okhttp-android:5.2.1@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/9.2.0-milestone-1/transforms/5f14c7e612216387b507ceb70b1592cb/workspace/transformed/jetified-okhttp-release/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/9.2.0-milestone-1/transforms/5f14c7e612216387b507ceb70b1592cb/workspace/transformed/jetified-okhttp-release/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp-android/5.2.1/3af559820bdcf4a3d7016100648b199edd305636/okhttp-android-5.2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

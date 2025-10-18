@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.benchmark:benchmark-junit4:1.4.1@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/9.2.0-milestone-1/transforms/9eb5fdcffb5a9b69c4b9296c9a8cc07d/workspace/transformed/jetified-benchmark-junit4-1.4.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/9.2.0-milestone-1/transforms/9eb5fdcffb5a9b69c4b9296c9a8cc07d/workspace/transformed/jetified-benchmark-junit4-1.4.1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/9.2.0-milestone-1/transforms/9eb5fdcffb5a9b69c4b9296c9a8cc07d/workspace/transformed/jetified-benchmark-junit4-1.4.1/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.benchmark/benchmark-junit4/1.4.1/8cf392531cf40caafd7b670e8661bbcdcd9c209b/benchmark-junit4-1.4.1-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.benchmark/benchmark-junit4/1.4.1/8462647e27d42c72b8fa7ec3e3a370f3c3a49799/benchmark-junit4-1.4.1-samples-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

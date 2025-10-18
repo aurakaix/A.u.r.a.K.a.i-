@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.compose.ui:ui-android:1.9.3@aar" external-system-id="GRADLE">
+    <ANNOTATIONS>
+      <root url="jar://$USER_HOME$/.gradle/caches/9.2.0-milestone-1/transforms/dcc45d0e11741c9b4b10e8ba7a1ffb11/workspace/transformed/jetified-ui-release/annotations.zip!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/9.2.0-milestone-1/transforms/dcc45d0e11741c9b4b10e8ba7a1ffb11/workspace/transformed/jetified-ui-release/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/9.2.0-milestone-1/transforms/dcc45d0e11741c9b4b10e8ba7a1ffb11/workspace/transformed/jetified-ui-release/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/9.2.0-milestone-1/transforms/dcc45d0e11741c9b4b10e8ba7a1ffb11/workspace/transformed/jetified-ui-release/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.compose.ui/ui-android/1.9.3/4c5d7fdd28ce46e4a71606e2783d6e3e480ccaed/ui-1.9.3-samples-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.compose.ui/ui-android/1.9.3/60986c22b6941764627e8569692e8507e378770c/ui-android-1.9.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

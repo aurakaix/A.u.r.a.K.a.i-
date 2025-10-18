@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AuraKai.iml" filepath="$PROJECT_DIR$/.idea/modules/AuraKai.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/datavein-oracle-native/AuraKai.datavein-oracle-native.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/datavein-oracle-native/AuraKai.datavein-oracle-native.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/datavein-oracle-native/AuraKai.datavein-oracle-native.main.iml" filepath="$PROJECT_DIR$/.idea/modules/datavein-oracle-native/AuraKai.datavein-oracle-native.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/datavein-oracle-native/AuraKai.datavein-oracle-native.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/datavein-oracle-native/AuraKai.datavein-oracle-native.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/secure-comm/AuraKai.secure-comm.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/secure-comm/AuraKai.secure-comm.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/secure-comm/AuraKai.secure-comm.main.iml" filepath="$PROJECT_DIR$/.idea/modules/secure-comm/AuraKai.secure-comm.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/secure-comm/AuraKai.secure-comm.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/secure-comm/AuraKai.secure-comm.unitTest.iml" />
+    </modules>
+  </component>
+</project>
