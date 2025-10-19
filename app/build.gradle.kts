@@ -5,7 +5,6 @@ plugins {
     id("com.google.dagger.hilt.android") apply false
     id("com.google.devtools.ksp") version "2.2.21-RC2-2.0.4"
     alias(libs.plugins.kotlin.serialization) apply false
-    id("org.openapi.generator") version "7.16.0"
 }
 
 android {
@@ -145,6 +144,7 @@ android {
         androidTestImplementation(platform(libs.androidx.compose.bom))
         androidTestImplementation(libs.hilt.android.testing)
 
-// --- DEBUGGING ---
+// --- DEBUGGING & LOGGING ---
         debugImplementation(libs.leakcanary.android)
+        implementation("com.jakewharton.timber:timber:4.7.1")
     }
